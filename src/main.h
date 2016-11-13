@@ -59,8 +59,15 @@ inline bool IsProtocolV1RetargetingFixed(int nHeight) { return TestNet() || nHei
 inline bool IsProtocolV2(int nHeight) { return TestNet() || nHeight > 0; }
 inline bool IsProtocolV3(int64_t nTime) { return TestNet() || nTime > 1470467000; }
 
+inline bool IsDriftReduced(int64_t nTime) { return TestNet() || nTime > 1480118400; } // Drifting Bug Fix
+
+inline int64_t TestingDrift(int64_t nTime) { return nTime + 128 * 60 * 60; }
+inline int64_t MainNetDrift(int64_t nTime) { return nTime + 15; }
+
 inline int64_t FutureDriftV1(int64_t nTime) { return nTime + 10 * 60; }
-inline int64_t FutureDriftV2(int64_t nTime) { return nTime + 128*60*60; }
+inline int64_t FutureDriftV2(int64_t nTime) {
+	return IsDriftReduced(nTime) ? MainNetDrift(nTime) : TestingDrift(nTime);
+}
 inline int64_t FutureDrift(int64_t nTime, int nHeight) { return IsProtocolV2(nHeight) ? FutureDriftV2(nTime) : FutureDriftV1(nTime); }
 
 inline unsigned int GetTargetSpacing(int nHeight) { return IsProtocolV2(nHeight) ? 64 : 60; }
